@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Hello friend</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.css" rel="stylesheet" />
+
+    <style>
+
+        @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro);
+
+        @font-face {
+            font-family: MrRobot;
+            src: url(mrrobot.ttf);
+        }
+
+        body {
+            background-color: #111111;
+            overflow: hidden;
+        }
+
+        #logo {
+            font-family: MrRobot;
+            color: #df2d2f;
+            font-size: 14rem;
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            overflow: auto;
+        }
+
+        .binary {
+            position: absolute;
+            top: 0;
+            left: 300px;
+            z-index: -1;
+            font-family: 'Source Sans Pro', sans-serif;
+            animation-duration: 800ms;
+            -webkit-animation-duration: 800ms;
+            writing-mode: vertical-rl;
+            text-orientation: sideways;
+            color: white;
+            text-shadow: 0 0 10px #91EDFF;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div id="logo">
+        <div style="margin-bottom: 1rem">M X N</div>
+        <span style="font-size: 3rem; color: #fff;">Hello&nbsp;friend&nbsp;🙂</span>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+
+    <script>
+
+        var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+
+        class Random {
+
+            static generateBinary() {
+                var random = Math.random();
+                if (random > 0.5) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+
+            static generate(min, max) {
+                return Math.floor((Math.random() * max) + min);
+            }
+
+        }
+
+        class Binary {
+            constructor() {
+                this.value = Random.generateBinary();
+            }
+
+            animate(ts, leftOffset, topOffset) {
+                var div = document.createElement("div");
+                $(div).css("font-size", ts + "px");
+                $(div).css("top", topOffset * (ts / 2));
+                $(div).css("left", leftOffset + "px");
+                $(div).text(this.value);
+                $(div).addClass("binary");
+                $(div).hide();
+                $("body").append(div);
+                $(div).show().addClass("animated fadeIn").on(animationEnd, this.fadeInEnd);
+                return $(div).offset().top;
+            }
+
+            fadeInEnd(event) {
+                var $binary = $(event.currentTarget);
+                $binary.removeClass("animated fadeIn");
+                $binary.addClass("animated fadeOut").on(animationEnd, function() {
+                    $binary.remove();
+                });
+            }
+        }
+
+        class BinaryLine {
+            constructor(lO, tS, dS) {
+                this.leftOffset = lO;
+                this.textSize = tS;
+                this.documentSize = dS;
+            }
+
+            generate() {
+                var iterator = 1;
+                var size = this.length;
+                var fontSize = this.textSize;
+                var documentSize = this.documentSize;
+                var currentOffset = 0;
+                var leftOffset = this.leftOffset;
+                var interval = setInterval(function() {
+                    if (currentOffset < documentSize) {
+                        var binary = new Binary();
+                        currentOffset = binary.animate(fontSize, leftOffset, iterator);
+                        iterator++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 80);
+            }
+        }
+
+        class BinaryAnimation {
+            constructor() {}
+
+            start() {
+                setInterval(function() {
+                    new BinaryLine(Random.generate(0, $(document).width()), Random.generate($(document).width() * 0.008, $(document).width() * 0.012), $(document).height()).generate();
+                }, 400);
+            }
+        }
+
+        new BinaryAnimation().start();
+
+    </script>
+
+</body>
+</html>
